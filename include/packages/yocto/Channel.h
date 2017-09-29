@@ -1,7 +1,6 @@
-/* channel.h
+/* Channel.h
  */
 
-#include "../common/status.h"
 #include <stdlib.h>
 #include <inttypes.h>
 #include <pthread.h>
@@ -15,49 +14,6 @@
 #ifndef yo_channel_h
 #define yo_channel_h
 
-  typedef struct slot_s { complex<real_4> data[CHUNK_SIZE]; } slot_t;
-
-  template<typename T, std::size_t N>
-
-
-  template<typename T, std::size_t N>
-
-  size_t Channel<T,N>::read(T *data, size_t size)
-  {
-    std::unique_lock<std::mutex> lck(read_mutex_);
-    for(size_t k=0; k<size; ++k) {
-      read_cv_.wait(lck, [&]{return read_count_;});
-      data[k] = buffer_[read_index_];
-      read_index_ =  (read_index_ + 1) % N;
-      --read_count_;
-      write_cv_.notify_one();
-    }
-  }
-
-  template<typename T, std::size_t N>
-  size_t Channel<T,N>::write(const T* const data, size_t size)
-  {
-    std::unique_lock<std::mutex> lck(write_mutex_);
-    for(size_t k=0; k<size; ++k) {
-      write_cv_.wait(lck, [&]{return write _count_;});
-      buffer_[write_index_] = data[k];
-      write_index_ =  (write_index_ + 1) % N;
-      --write_count_;
-      read_cv_.notify_one();
-    }
-  }
-
-/*
-  Channel<slot_t, N> channel;
-  auto write_fn = [&](const slot_t * const data, size_t size) -> bool {
-    channel.write(data, size);
-  };
-
-  auto n_read = channel.read(hout, chunk_size);
-
-  method(std::function<bool (const void* const buf, size_t size)> fn) { fn_ = fn; };
-*/
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -65,6 +21,30 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+  class Channel
+  {
+    public:
+      Channel() : read_index_(0),
+                  write_index_(0),
+                  read_count_(0),
+                  write_count_(0) {};
+      virtual ~Channel() {};
+      inline size_t read(T *buf, size_t size);
+      inline size_t read(CPHEADER &hout, size_t size);
+      inline size_t write(const T* const buf, size_t size);
+    private:
+      size_t read_index_;
+      size_t write_index_;
+      size_t read_count_;
+      size_t write_count_;
+      std::mutex read_mutex_;
+      std::mutex write_mutex_;
+      std::condition_variable read_cv_;
+      std::condition_variable write_cv_;
+      array<T, N> buffer_;
+  };
+
 
 #endif
 
