@@ -23,7 +23,7 @@ test_server_LDADD        = $(yocto_ldadd)
 
 lib_LTLIBRARIES          = libyocto.la
 libyocto_la_SOURCES      = src/packages/common/status.cc                       \
-                           src/packages/channel/channel.cc                     \
+                           src/packages/channel/Channel.cc                     \
                            src/packages/test/test.cc                            
 
 libyocto_la_LIBADD         = -lz                                               \
@@ -35,7 +35,7 @@ libyocto_la_LDFLAGS        = -export-symbols-regex '^yocto_[^_]' -fPIC         \
 
 pkginclude_HEADERS       = include/packages/common/status.h                    \
                            include/packages/common/debug.h                     \
-                           include/packages/channel/channel.h                  \
+                           include/packages/channel/Channel.h                  \
                            include/packages/test/test.h                         
 
 ## *EOF*
