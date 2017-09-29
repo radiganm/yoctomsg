@@ -3,7 +3,7 @@
  * All Rights Reserved
  */
 
-#include "../../yocto/Channel.h"
+#include "packages/yocto/Channel.h"
 
 #include <getopt.h>
 #include <iostream>

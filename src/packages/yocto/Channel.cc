@@ -1,9 +1,7 @@
 /* Channel.cc
  */
 
-#include "../../yocto/Channel.h"
-
-  typedef struct slot_s { complex<real_4> data[CHUNK_SIZE]; } slot_t;
+#include "packages/yocto/Channel.h"
 
   template<typename T, std::size_t N>
   size_t Channel<T,N>::read(T *data, size_t size)
@@ -23,7 +21,7 @@
   {
     std::unique_lock<std::mutex> lck(write_mutex_);
     for(size_t k=0; k<size; ++k) {
-      write_cv_.wait(lck, [&]{return write _count_;});
+      write_cv_.wait(lck, [&]{return write_count_;});
       buffer_[write_index_] = data[k];
       write_index_ =  (write_index_ + 1) % N;
       --write_count_;

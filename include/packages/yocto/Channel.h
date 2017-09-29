@@ -8,6 +8,8 @@
 #include <functional>
 #include <mutex>
 #include <condition_variable>
+#include <array>
+#include <complex>
 
 #define CHUNK_SIZE (1024)
 
@@ -22,6 +24,9 @@ extern "C" {
 }
 #endif
 
+  typedef struct slot_s { std::complex<double> data[CHUNK_SIZE]; } slot_t;
+
+  template<typename T, std::size_t N>
   class Channel
   {
     public:
@@ -31,7 +36,6 @@ extern "C" {
                   write_count_(0) {};
       virtual ~Channel() {};
       inline size_t read(T *buf, size_t size);
-      inline size_t read(CPHEADER &hout, size_t size);
       inline size_t write(const T* const buf, size_t size);
     private:
       size_t read_index_;
@@ -42,7 +46,7 @@ extern "C" {
       std::mutex write_mutex_;
       std::condition_variable read_cv_;
       std::condition_variable write_cv_;
-      array<T, N> buffer_;
+      std::array<T, N> buffer_;
   };
 
 
