@@ -1,9 +1,11 @@
-/* test_channel.cc
+/* write_channel.cc
  * Copyright 2016 Mac Radigan
  * All Rights Reserved
  */
 
 #include "packages/yocto/Channel.h"
+#include "packages/yocto/ShmemChannel.h"
+#include "packages/yocto/BasicChannel.h"
 
 #include <getopt.h>
 #include <iostream>
@@ -14,9 +16,11 @@
 #include <time.h>
 #include <math.h>
 
+  using namespace rad::yocto;
+
   int usage(int argc, char *argv[])
   {
-    std::cout << argv[0] << " - " << "test channel" << std::endl;
+    std::cout << argv[0] << " - " << "write_channel" << std::endl;
     std::cout << "    -d,--debug           debug" << std::endl;
     std::cout << "    -v,--verbose         verbose" << std::endl;
     std::cout << "    -h,--help            print this help message" << std::endl;
@@ -65,6 +69,9 @@
   method(std::function<bool (const void* const buf, size_t size)> fn) { fn_ = fn; };
 */
 
+    constexpr size_t N = 1024;
+    //Channel<slot_t,N> &channel = *new BasicChannel<slot_t,N>();
+    BasicChannel<slot_t,N> &channel = *new BasicChannel<slot_t,N>();
 
     return status;
   }

@@ -3,7 +3,8 @@
 ## All Rights Reserved
 
 AM_LDFLAGS  = -pthread                                      \
-              -L/usr/lib -ldl -lm                            
+              -L/usr/lib -ldl -lm                           \
+              -L/usr/lib/x86_64-linux-gnu -lgflags
 
 AM_CPPFLAGS = -I$(top_srcdir)/include                       \
               -std=c++11
@@ -13,21 +14,33 @@ yocto_ldadd              = libyocto.la                      \
                            -ldl -lm                         \
                            -lrt                              
 
-bin_PROGRAMS             = test_channel                      
+bin_PROGRAMS             = read_channel                     \
+                           write_channel                    \
+                           basic_channel                     
 
-test_channel_SOURCES     = src/tests/test_channel.cc
-test_channel_LDADD       = $(yocto_ldadd)
+read_channel_SOURCES     = src/tests/read_channel.cc
+read_channel_LDADD       = $(yocto_ldadd)
+
+write_channel_SOURCES    = src/tests/write_channel.cc
+write_channel_LDADD      = $(yocto_ldadd)
+
+basic_channel_SOURCES    = src/tests/basic_channel.cc
+basic_channel_LDADD      = $(yocto_ldadd)
 
 lib_LTLIBRARIES          = libyocto.la
-libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                        
+libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                       \
+                           src/packages/yocto/BasicChannel.cc                  \
+                           src/packages/yocto/ShmemChannel.cc                   
 
-libyocto_la_LIBADD         = -lz                                               \
+libyocto_la_LIBADD       = -lz                                                 \
                            -L/usr/lib/x86_64-linux-gnu -lrt
 
-libyocto_la_LDFLAGS        = -export-symbols-regex '^yocto_[^_]' -fPIC         \
+libyocto_la_LDFLAGS      = -export-symbols-regex '^yocto_[^_]' -fPIC           \
                            -shared -pthread                                    \
                            -L/usr/lib/x86_64-linux-gnu -lrt
 
-pkginclude_HEADERS       = include/packages/yocto/Channel.h                     
+pkginclude_HEADERS       = include/packages/yocto/Channel.h                    \
+                           include/packages/yocto/BasicChannel.h               \
+                           include/packages/yocto/ShmemChannel.h                
 
 ## *EOF*

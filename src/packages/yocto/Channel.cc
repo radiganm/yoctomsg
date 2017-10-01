@@ -1,32 +1,19 @@
 /* Channel.cc
+ * Copyright 2017 Mac Radigan
+ * All Rights Reserved
  */
 
 #include "packages/yocto/Channel.h"
 
-  template<typename T, std::size_t N>
-  size_t Channel<T,N>::read(T *data, size_t size)
+  std::ostream& operator<<(std::ostream &os, const rad::yocto::slot_t &o)
   {
-    std::unique_lock<std::mutex> lck(read_mutex_);
-    for(size_t k=0; k<size; ++k) {
-      read_cv_.wait(lck, [&]{return read_count_;});
-      data[k] = buffer_[read_index_];
-      read_index_ =  (read_index_ + 1) % N;
-      --read_count_;
-      write_cv_.notify_one();
-    }
-  }
-
-  template<typename T, std::size_t N>
-  size_t Channel<T,N>::write(const T* const data, size_t size)
-  {
-    std::unique_lock<std::mutex> lck(write_mutex_);
-    for(size_t k=0; k<size; ++k) {
-      write_cv_.wait(lck, [&]{return write_count_;});
-      buffer_[write_index_] = data[k];
-      write_index_ =  (write_index_ + 1) % N;
-      --write_count_;
-      read_cv_.notify_one();
-    }
+    std::ios_base::fmtflags fo = os.flags();
+    std::ios_base::fmtflags ff = os.flags();
+    ff |= os.hex;
+    os.setf(ff);
+    os << reinterpret_cast<const char *>(&o) << std::endl; 
+    os.setf(fo);
+    return os;
   }
 
 /* *EOF* */
