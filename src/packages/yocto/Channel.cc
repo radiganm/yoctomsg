@@ -11,7 +11,8 @@
     std::ios_base::fmtflags ff = os.flags();
     ff |= os.hex;
     os.setf(ff);
-    os << reinterpret_cast<const char *>(&o) << std::endl; 
+  //os << reinterpret_cast<const char *>(&o) << std::endl << std::flush; 
+    os << reinterpret_cast<const char *>(&o)[0] << std::endl << std::flush; 
     os.setf(fo);
     return os;
   }

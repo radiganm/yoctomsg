@@ -16,7 +16,8 @@ yocto_ldadd              = libyocto.la                      \
 
 bin_PROGRAMS             = read_channel                     \
                            write_channel                    \
-                           basic_channel                     
+                           basic_channel                    \
+                           echo_test
 
 read_channel_SOURCES     = src/tests/read_channel.cc
 read_channel_LDADD       = $(yocto_ldadd)
@@ -26,6 +27,9 @@ write_channel_LDADD      = $(yocto_ldadd)
 
 basic_channel_SOURCES    = src/tests/basic_channel.cc
 basic_channel_LDADD      = $(yocto_ldadd)
+
+echo_test_SOURCES        = src/tests/echo_test.cc
+echo_test_LDADD          = $(yocto_ldadd)
 
 lib_LTLIBRARIES          = libyocto.la
 libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                       \

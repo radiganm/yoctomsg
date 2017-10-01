@@ -28,35 +28,43 @@
     gflags::SetUsageMessage(usage);
     gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-    constexpr size_t N = 1024;
+    constexpr size_t N = 5;
     rad::yocto::Channel<rad::yocto::slot_t,N> &channel = *new rad::yocto::BasicChannel<rad::yocto::slot_t,N>();
 
-    auto write_fn = [&](void) -> void {
+    std::thread write_th([&](void) -> void {
+      char counter = 'a';
       rad::yocto::slot_t data; 
-      memset(&data, 'x', sizeof(data));
       while(bool forever = true)
       {
+        memset(&data, counter, sizeof(data));
+        counter = ('z' == counter) ? 'a' : ++counter;
         auto size = channel.write(&data, 1);
-        std::cerr << "sent:" << size << " block(s)" << std::endl << std::flush;
+        std::cerr << "sent:" << size << " block(s), with " << data << std::endl << std::flush;
         std::this_thread::sleep_for(std::chrono::seconds(1));
       } // send loop
-    };
-    std::thread write_th(write_fn);
+    });
 
-
-    auto read_fn = [&](void) -> void {
+    std::thread read_th([&](void) -> void {
       rad::yocto::slot_t data; 
       while(bool forever = true)
       {
         auto size = channel.read(&data, 1);
         std::cerr << "received:" << size << " block(s)" << std::endl << std::flush;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::seconds(2));
       } // receive loop
-    };
-    std::thread read_th(read_fn);
+    });
+
+    std::thread summary_th([&](void) -> void {
+      while(bool forever = true)
+      {
+        channel.summarize(std::cout);
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+      } // summary loop
+    });
 
     read_th.join();
     write_th.join();
+    summary_th.join();
 
 //  std::istream_iterator<std::string> eos;
 //  std::istream_iterator<std::string> is = std::istream_iterator<std::string>(std::cin);

@@ -35,6 +35,7 @@ namespace rad::yocto {
       virtual ~Channel() { buffer_ = reinterpret_cast<char *>(&slot_); };
       virtual size_t read(T *buf, size_t size);
       virtual size_t write(const T* const buf, size_t size);
+      virtual void summarize(std::ostream &os);
       int underflow() 
       {
         if (this->gptr() == this->egptr()) {
@@ -50,26 +51,19 @@ namespace rad::yocto {
       char *buffer_;
       T slot_;
     private:
-      //std::streambuf* sbuf_;
-      //char* buffer_;
-      //friend std::ostream & operator<<(std::ostream &os, const Channel& o);
-      //friend std::istream & operator>>(std::ostream &os, const Channel& o);
+      template<typename U, std::size_t M>
+      friend std::ostream& operator<<(std::ostream &os, rad::yocto::Channel<T,N>& o);
   };
 
 } // namespace
 
-#endif
+  template<typename T, std::size_t N>
+  std::ostream& operator<<(std::ostream &os, rad::yocto::Channel<T,N>& o)
+  {
+    o.summarize(os);
+    return os;
+  }
 
-//std::istream & operator>>(std::istream &is, const Channel& o)
-//{
-//  o.read(
-//  return os;
-//}
-//
-//std::ostream & operator<<(std::ostream &os, const Channel& o)
-//{
-//  o.write(
-//  return os;
-//}
+#endif
 
 /* *EOF* */

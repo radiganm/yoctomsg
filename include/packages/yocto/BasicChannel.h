@@ -41,6 +41,7 @@ namespace rad::yocto {
       virtual ~BasicChannel() {};
       inline size_t read(T *buf, size_t size);
       inline size_t write(const T* const buf, size_t size);
+      void summarize(std::ostream &os);
     private:
       size_t read_index_;
       size_t write_index_;
@@ -53,6 +54,23 @@ namespace rad::yocto {
   };
 
 } // namespace
+
+  template<typename T, std::size_t N>
+  void rad::yocto::BasicChannel<T,N>::summarize(std::ostream &os)
+  {
+    std::unique_lock<std::mutex> lck_read(read_mutex_);
+    std::unique_lock<std::mutex> lck_write(write_mutex_);
+    size_t m = count_.load();
+//  for(size_t k=0; k<m; ++k) {
+//    char c = reinterpret_cast<char>((&storage_[k])[0]);
+//    os << c << "|";
+//  }
+//  os << "*";
+//  for(size_t k=m+1; k<N; ++k) {
+//    char c = (&storage_[k])[0];
+//    os << c << "|";
+//  }
+  }
 
   template<typename T, std::size_t N>
   size_t rad::yocto::BasicChannel<T,N>::read(T *data, size_t size)
