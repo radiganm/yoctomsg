@@ -38,6 +38,7 @@ echo_test_LDADD          = $(yocto_ldadd)
 lib_LTLIBRARIES          = libyocto.la
 libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                       \
                            src/packages/yocto/BasicChannel.cc                  \
+                           src/packages/yocto/ArrayChannel.cc                  \
                            src/packages/yocto/ShmemChannel.cc                  \
                            src/packages/yocto/SharedMemory.cc                   
 
@@ -50,6 +51,7 @@ libyocto_la_LDFLAGS      = -export-symbols-regex '^yocto_[^_]' -fPIC           \
 
 pkginclude_HEADERS       = include/packages/yocto/Channel.h                    \
                            include/packages/yocto/BasicChannel.h               \
+                           include/packages/yocto/ArrayChannel.h               \
                            include/packages/yocto/ShmemChannel.h               \
                            include/packages/yocto/SharedMemory.h                
 

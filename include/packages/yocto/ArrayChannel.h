@@ -1,4 +1,4 @@
-/* BasicChannel.h
+/* ArrayChannel.h
  * Copyright 2017 Mac Radigan
  * All Rights Reserved
  */
@@ -16,8 +16,8 @@
 #include <atomic>
 #include <sstream>
 
-#ifndef yo_BasicChannel_h
-#define yo_BasicChannel_h
+#ifndef yo_ArrayChannel_h
+#define yo_ArrayChannel_h
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,14 +30,14 @@ extern "C" {
 namespace rad::yocto {
 
   template<typename T, std::size_t N>
-  class BasicChannel : public rad::yocto::Channel<T,N> 
+  class ArrayChannel : public rad::yocto::Channel<T,N> 
   {
     public:
-      BasicChannel() : Channel<T,N>(), n_in_(0), n_out_(0) 
+      ArrayChannel() : Channel<T,N>(), n_in_(0), n_out_(0) 
       { 
         this->buffer_ = reinterpret_cast<unsigned char *>(&storage_[0]); 
       };
-      virtual ~BasicChannel() {};
+      virtual ~ArrayChannel() {};
       inline size_t read(T *buf, size_t size);
       inline size_t write(const T* const buf, size_t size);
       void summarize(std::ostream &os);
@@ -55,14 +55,14 @@ namespace rad::yocto {
 } // namespace
 
   template<typename T, std::size_t N>
-  void rad::yocto::BasicChannel<T,N>::summarize(std::ostream &os)
+  void rad::yocto::ArrayChannel<T,N>::summarize(std::ostream &os)
   {
     std::stringstream ss;
     os << ss.str();
   }
 
   template<typename T, std::size_t N>
-  size_t rad::yocto::BasicChannel<T,N>::read(T *data, size_t data_size)
+  size_t rad::yocto::ArrayChannel<T,N>::read(T *data, size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_out_);
     const size_t buffer_size = N * sizeof(T);
@@ -84,7 +84,7 @@ namespace rad::yocto {
   }
 
   template<typename T, std::size_t N>
-  size_t rad::yocto::BasicChannel<T,N>::write(const T* const data, size_t data_size)
+  size_t rad::yocto::ArrayChannel<T,N>::write(const T* const data, size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_in_);
     const size_t buffer_size = N * sizeof(T);
