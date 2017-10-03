@@ -50,6 +50,7 @@ namespace rad::yocto {
       std::condition_variable cv_out_;
       std::array<T, N> storage_;
       unsigned char *buffer_;
+      size_t buffer_size_ = N * sizeof(T);
   };
 
 } // namespace
@@ -65,15 +66,15 @@ namespace rad::yocto {
   size_t rad::yocto::ArrayChannel<T,N>::read(T *data, size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_out_);
-    const size_t buffer_size = N * sizeof(T);
-    const size_t n_in  = n_in_.load();
-    const size_t n_out = n_out_.load();
-    if(n_in <= n_out) cv_out_.wait(lck, [&]{return n_in_.load() > n_out_.load();});
+    auto test_fn = [&](void) -> bool { return n_in_.load() <= n_out_.load(); };
     while(data_size > 0)
     {
+      if(test_fn()) cv_out_.wait(lck, [&]{return !test_fn();});
+      const size_t n_in  = n_in_.load();
+      const size_t n_out = n_out_.load();
       const size_t n_delta = std::min(data_size, n_in - n_out);
-      const size_t k1 = (n_out + n_delta) % buffer_size;
-      const size_t k2 = std::min(k1+n_delta, buffer_size);
+      const size_t k1 = (n_out + n_delta) % buffer_size_;
+      const size_t k2 = std::min(k1+n_delta, buffer_size_);
       const size_t m_delta = (k2 - k1) % sizeof(T);
       const size_t M = m_delta / sizeof(T);
       data_size -= M;
@@ -88,15 +89,15 @@ namespace rad::yocto {
   size_t rad::yocto::ArrayChannel<T,N>::write(const T* const data, size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_in_);
-    const size_t buffer_size = N * sizeof(T);
-    const size_t n_in  = n_in_.load();
-    const size_t n_out = n_out_.load();
-    if(n_in <= n_out) cv_in_.wait(lck, [&]{return n_in_.load() > n_out_.load();});
+    auto test_fn = [&](void) -> bool { n_in_.load() - n_out_.load() >= buffer_size_; };
     while(data_size > 0)
     {
+      if(test_fn()) cv_in_.wait(lck, [&]{return !test_fn();});
+      const size_t n_in  = n_in_.load();
+      const size_t n_out = n_out_.load();
       const size_t n_delta = std::min(data_size, n_in - n_out);
-      const size_t k1 = (n_out + n_delta) % buffer_size;
-      const size_t k2 = std::min(k1+n_delta, buffer_size);
+      const size_t k1 = (n_out + n_delta) % buffer_size_;
+      const size_t k2 = std::min(k1+n_delta, buffer_size_);
       const size_t m_delta = (k2 - k1) % sizeof(T);
       const size_t M = m_delta / sizeof(T);
       data_size -= M;

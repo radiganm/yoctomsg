@@ -71,7 +71,7 @@ namespace rad::yocto {
     while(data_size > 0)
     {
       if(test_fn()) cv_out_.wait(lck, [&]{return !test_fn();});
-      const size_t n_in  = n_in_ .load();
+      const size_t n_in  = n_in_.load();
       const size_t n_out = n_out_.load();
       const size_t n_delta = std::min(data_size, n_in-n_out);
       const size_t k = (n_out + n_delta) % buffer_size_;
@@ -92,7 +92,7 @@ namespace rad::yocto {
     while(data_size > 0)
     {
       if(test_fn()) cv_in_.wait(lck, [&]{return !test_fn();});
-      const size_t n_in  = n_in_ .load();
+      const size_t n_in  = n_in_.load();
       const size_t n_out = n_out_.load();
       const size_t n_delta = std::min(data_size, n_in-n_out);
       const size_t k = (n_in + n_delta) % buffer_size_;

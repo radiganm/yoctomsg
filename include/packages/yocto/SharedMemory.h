@@ -22,9 +22,9 @@ namespace rad::yocto {
   class SharedMemory
   {
     public:
-      SharedMemory(const std::string &name);
-      SharedMemory(const std::string &name, size_t size);
+      SharedMemory(const std::string &name, size_t size, bool owner=true);
       virtual ~SharedMemory();
+      inline void *get_data() { return data_; };
     protected:
     private:
       int fd_;
@@ -32,15 +32,15 @@ namespace rad::yocto {
       bool owner_;
       void *data_;
       std::string name_;
-      friend std::ostream& operator<<(std::ostream &os, rad::yocto::SharedMemory& o);
+    //friend std::ostream& operator<<(std::ostream &os, const rad::yocto::SharedMemory& o);
   };
 
 } // namespace
 
-  std::ostream& operator<<(std::ostream &os, const rad::yocto::SharedMemory& o)
-  {
-    return os;
-  }
+//std::ostream& operator<<(std::ostream &os, const rad::yocto::SharedMemory& o)
+//{
+//  return os;
+//}
 
 #endif
 
