@@ -14,10 +14,14 @@ yocto_ldadd              = libyocto.la                      \
                            -ldl -lm                         \
                            -lrt                              
 
-bin_PROGRAMS             = read_channel                     \
+bin_PROGRAMS             = yoctocat                         \
+                           read_channel                     \
                            write_channel                    \
                            basic_channel                    \
                            echo_test
+
+yoctocat_SOURCES         = src/tests/yoctocat.cc
+yoctocat_LDADD           = $(yocto_ldadd)
 
 read_channel_SOURCES     = src/tests/read_channel.cc
 read_channel_LDADD       = $(yocto_ldadd)
@@ -34,7 +38,8 @@ echo_test_LDADD          = $(yocto_ldadd)
 lib_LTLIBRARIES          = libyocto.la
 libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                       \
                            src/packages/yocto/BasicChannel.cc                  \
-                           src/packages/yocto/ShmemChannel.cc                   
+                           src/packages/yocto/ShmemChannel.cc                  \
+                           src/packages/yocto/SharedMemory.cc                   
 
 libyocto_la_LIBADD       = -lz                                                 \
                            -L/usr/lib/x86_64-linux-gnu -lrt
@@ -45,6 +50,7 @@ libyocto_la_LDFLAGS      = -export-symbols-regex '^yocto_[^_]' -fPIC           \
 
 pkginclude_HEADERS       = include/packages/yocto/Channel.h                    \
                            include/packages/yocto/BasicChannel.h               \
-                           include/packages/yocto/ShmemChannel.h                
+                           include/packages/yocto/ShmemChannel.h               \
+                           include/packages/yocto/SharedMemory.h                
 
 ## *EOF*

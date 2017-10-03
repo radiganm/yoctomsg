@@ -14,6 +14,7 @@
 #include <condition_variable>
 #include <array>
 #include <atomic>
+#include <sstream>
 
 #ifndef yo_BasicChannel_h
 #define yo_BasicChannel_h
@@ -60,22 +61,30 @@ namespace rad::yocto {
   {
     std::unique_lock<std::mutex> lck_read(read_mutex_);
     std::unique_lock<std::mutex> lck_write(write_mutex_);
+    std::stringstream ss;
+    const std::string delim = "";
+    const std::string sep = "|";
     size_t m = count_.load();
-//  for(size_t k=0; k<m; ++k) {
-//    char c = reinterpret_cast<char>((&storage_[k])[0]);
-//    os << c << "|";
-//  }
-//  os << "*";
-//  for(size_t k=m+1; k<N; ++k) {
-//    char c = (&storage_[k])[0];
-//    os << c << "|";
-//  }
+    ss << std::endl;
+    ss << m << "(" << read_index_ << "," << write_index_ << ") ";
+    for(size_t k=0; k<m; ++k) {
+      unsigned char c = *reinterpret_cast<unsigned char *>((&storage_[k].data[0]));
+      ss << c << delim;
+    }
+    ss << sep;
+    for(size_t k=m+1; k<N; ++k) {
+      unsigned char c = *reinterpret_cast<unsigned char *>((&storage_[k].data[0]));
+      ss << c << delim;
+    }
+    ss << std::endl;
+    os << ss.str();
   }
 
   template<typename T, std::size_t N>
   size_t rad::yocto::BasicChannel<T,N>::read(T *data, size_t size)
   {
     std::unique_lock<std::mutex> lck(read_mutex_);
+    std::stringstream ss;
     for(size_t k=0; k<size; ++k) {
       read_cv_.wait(lck, [&]{return count_.load() > 0;});
       data[k] = storage_[read_index_];
@@ -91,7 +100,7 @@ namespace rad::yocto {
   {
     std::unique_lock<std::mutex> lck(write_mutex_);
     for(size_t k=0; k<size; ++k) {
-      write_cv_.wait(lck, [&]{return count_.load() < N;});
+      write_cv_.wait(lck, [&]{return count_.load() <= N;});
       storage_[write_index_] = data[k];
       write_index_ =  (write_index_ + 1) % N;
       ++count_;

@@ -35,10 +35,11 @@ namespace rad::yocto {
       ShmemChannel() : Channel<T,N>(), 
                        read_index_(0),
                        write_index_(0),
-                       count_(N) {};
+                       count_(0) {};
       virtual ~ShmemChannel() {};
       inline size_t read(T *buf, size_t size);
       inline size_t write(const T* const buf, size_t size);
+      void summarize(std::ostream &os);
     private:
       size_t read_index_;
       size_t write_index_;

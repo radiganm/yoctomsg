@@ -50,7 +50,7 @@
       {
         auto size = channel.read(&data, 1);
         std::cerr << "received:" << size << " block(s)" << std::endl << std::flush;
-        std::this_thread::sleep_for(std::chrono::seconds(2));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       } // receive loop
     });
 
@@ -58,18 +58,13 @@
       while(bool forever = true)
       {
         channel.summarize(std::cout);
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
       } // summary loop
     });
 
     read_th.join();
     write_th.join();
     summary_th.join();
-
-//  std::istream_iterator<std::string> eos;
-//  std::istream_iterator<std::string> is = std::istream_iterator<std::string>(std::cin);
-//  std::ostream_iterator<std::string> os(std::cout," :\n: ");
-//  std::copy(is, eos, os);
 
     return status;
   }
