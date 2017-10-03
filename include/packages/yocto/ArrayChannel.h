@@ -42,8 +42,8 @@ namespace rad::yocto {
       inline size_t write(const T* const buf, size_t size);
       void summarize(std::ostream &os);
     private:
-      std::atomic_int n_in_;  // write in
-      std::atomic_int n_out_; // read out
+      std::atomic_uint64_t n_in_;  // write in
+      std::atomic_uint64_t n_out_; // read out
       std::mutex lck_in_;
       std::mutex lck_out_;
       std::condition_variable cv_in_;
@@ -71,13 +71,14 @@ namespace rad::yocto {
     if(n_in <= n_out) cv_out_.wait(lck, [&]{return n_in_.load() > n_out_.load();});
     while(data_size > 0)
     {
-      const size_t n_delta = n_in - n_out;
-      const size_t k = (n_out + n_delta) % buffer_size;
-      const size_t m_delta = k % sizeof(T);
+      const size_t n_delta = std::min(data_size, n_in - n_out);
+      const size_t k1 = (n_out + n_delta) % buffer_size;
+      const size_t k2 = std::min(k1+n_delta, buffer_size);
+      const size_t m_delta = (k2 - k1) % sizeof(T);
       const size_t M = m_delta / sizeof(T);
       data_size -= M;
       n_out_ -= m_delta;
-      std::copy(&storage_[0], &storage_[M], data);
+      std::copy(&storage_[k1], &storage_[k2], data);
       cv_in_.notify_one();
     }
     return data_size;
@@ -93,13 +94,14 @@ namespace rad::yocto {
     if(n_in <= n_out) cv_in_.wait(lck, [&]{return n_in_.load() > n_out_.load();});
     while(data_size > 0)
     {
-      const size_t n_delta = n_in - n_out;
-      const size_t k = (n_out + n_delta) % buffer_size;
-      const size_t m_delta = k % sizeof(T);
+      const size_t n_delta = std::min(data_size, n_in - n_out);
+      const size_t k1 = (n_out + n_delta) % buffer_size;
+      const size_t k2 = std::min(k1+n_delta, buffer_size);
+      const size_t m_delta = (k2 - k1) % sizeof(T);
       const size_t M = m_delta / sizeof(T);
       data_size -= M;
       n_in_ -= m_delta;
-      std::copy(data, data+M, &storage_[0]);
+      std::copy(data, data+M, &storage_[k1]);
       cv_in_.notify_one();
     }
     return data_size;
