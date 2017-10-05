@@ -38,8 +38,8 @@ namespace rad::yocto {
         this->buffer_ = reinterpret_cast<unsigned char *>(&storage_[0]); 
       };
       virtual ~ArrayChannel() {};
-      inline size_t read(T *buf, size_t size);
-      inline size_t write(const T* const buf, size_t size);
+      inline std::size_t read(T *buf, std::size_t size);
+      inline std::size_t write(const T* const buf, std::size_t size);
       void summarize(std::ostream &os);
     private:
       std::atomic_uint64_t n_in_;  // write in
@@ -50,7 +50,7 @@ namespace rad::yocto {
       std::condition_variable cv_out_;
       std::array<T, N> storage_;
       unsigned char *buffer_;
-      size_t buffer_size_ = N * sizeof(T);
+      std::size_t buffer_size_ = N * sizeof(T);
   };
 
 } // namespace
@@ -63,20 +63,20 @@ namespace rad::yocto {
   }
 
   template<typename T, std::size_t N>
-  size_t rad::yocto::ArrayChannel<T,N>::read(T *data, size_t data_size)
+  std::size_t rad::yocto::ArrayChannel<T,N>::read(T *data, std::size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_out_);
     auto test_fn = [&](void) -> bool { return n_in_.load() <= n_out_.load(); };
     while(data_size > 0)
     {
       if(test_fn()) cv_out_.wait(lck, [&]{return !test_fn();});
-      const size_t n_in  = n_in_.load();
-      const size_t n_out = n_out_.load();
-      const size_t n_delta = std::min(data_size, n_in - n_out);
-      const size_t k1 = (n_out + n_delta) % buffer_size_;
-      const size_t k2 = std::min(k1+n_delta, buffer_size_);
-      const size_t m_delta = (k2 - k1) % sizeof(T);
-      const size_t M = m_delta / sizeof(T);
+      const std::size_t n_in  = n_in_.load();
+      const std::size_t n_out = n_out_.load();
+      const std::size_t n_delta = std::min(data_size, n_in - n_out);
+      const std::size_t k1 = (n_out + n_delta) % buffer_size_;
+      const std::size_t k2 = std::min(k1+n_delta, buffer_size_);
+      const std::size_t m_delta = (k2 - k1) % sizeof(T);
+      const std::size_t M = m_delta / sizeof(T);
       data_size -= M;
       n_out_ -= m_delta;
       std::copy(&storage_[k1], &storage_[k2], data);
@@ -86,20 +86,20 @@ namespace rad::yocto {
   }
 
   template<typename T, std::size_t N>
-  size_t rad::yocto::ArrayChannel<T,N>::write(const T* const data, size_t data_size)
+  std::size_t rad::yocto::ArrayChannel<T,N>::write(const T* const data, std::size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_in_);
     auto test_fn = [&](void) -> bool { n_in_.load() - n_out_.load() >= buffer_size_; };
     while(data_size > 0)
     {
       if(test_fn()) cv_in_.wait(lck, [&]{return !test_fn();});
-      const size_t n_in  = n_in_.load();
-      const size_t n_out = n_out_.load();
-      const size_t n_delta = std::min(data_size, n_in - n_out);
-      const size_t k1 = (n_out + n_delta) % buffer_size_;
-      const size_t k2 = std::min(k1+n_delta, buffer_size_);
-      const size_t m_delta = (k2 - k1) % sizeof(T);
-      const size_t M = m_delta / sizeof(T);
+      const std::size_t n_in  = n_in_.load();
+      const std::size_t n_out = n_out_.load();
+      const std::size_t n_delta = std::min(data_size, n_in - n_out);
+      const std::size_t k1 = (n_out + n_delta) % buffer_size_;
+      const std::size_t k2 = std::min(k1+n_delta, buffer_size_);
+      const std::size_t m_delta = (k2 - k1) % sizeof(T);
+      const std::size_t M = m_delta / sizeof(T);
       data_size -= M;
       n_in_ -= m_delta;
       std::copy(data, data+M, &storage_[k1]);

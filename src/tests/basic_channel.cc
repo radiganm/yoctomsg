@@ -57,7 +57,8 @@
     std::thread summary_th([&](void) -> void {
       while(bool forever = true)
       {
-        channel.summarize(std::cout);
+        //channel.summarize(std::cout);
+        std::cerr << channel;
         std::this_thread::sleep_for(std::chrono::seconds(1));
       } // summary loop
     });

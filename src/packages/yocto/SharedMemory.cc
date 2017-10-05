@@ -13,7 +13,7 @@
 
   using namespace rad::yocto;
 
-  SharedMemory::SharedMemory(const std::string &name, size_t size, bool owner)
+  SharedMemory::SharedMemory(const std::string &name, std::size_t size, bool owner)
   {
     name_  = name;
     size_  = size;
