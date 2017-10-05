@@ -52,7 +52,7 @@ namespace rad::yocto {
 } // namespace
 
   template<typename T>
-  std::size_t rad::yocto::Pipe::read(T *data, std::size_t size)
+  inline std::size_t rad::yocto::Pipe::read(T *data, std::size_t size)
   {
     channel_->write(data, size);
   }

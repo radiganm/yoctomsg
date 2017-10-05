@@ -56,7 +56,7 @@ namespace rad::yocto {
 
 } // namespace
 
-  size_t rad::yocto::YoChannel::read(void *data, std::size_t data_size)
+  inline size_t rad::yocto::YoChannel::read(void *data, std::size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_out_);
     auto test_fn = [&](void) -> bool { return n_in_.load() <= n_out_.load(); };
@@ -79,7 +79,7 @@ namespace rad::yocto {
     return xfer_size;
   }
 
-  size_t rad::yocto::YoChannel::write(const void* const data, std::size_t data_size)
+  inline size_t rad::yocto::YoChannel::write(const void* const data, std::size_t data_size)
   {
     std::unique_lock<std::mutex> lck(lck_in_);
     auto test_fn = [&](void) -> bool { n_in_.load() - n_out_.load() >= buffer_size_; };
