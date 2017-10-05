@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-## boostrap.mk (for librad)
+## boostrap.mk (for yoctomsg)
 ## Copyright 2016 Mac Radigan
 ## All Rights Reserved
 
@@ -22,5 +22,6 @@ packages-apt:
 	sudo apt-get install -y libtool
 	sudo apt-get install -y build-essential
 	sudo apt-get install -y gfortran
+	sudo apt-get install -y libgflags-dev
 
 ## *EOF*
