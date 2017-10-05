@@ -21,13 +21,19 @@
     mode_t mode = S_IRUSR | S_IWUSR;
     int oflag = owner ? O_RDWR | O_CREAT : O_RDWR;
     fd_ = shm_open(name.c_str(), oflag, mode);
-    if(fd_ < 1) throw new std::bad_alloc;
+    if(-1 == fd_) throw new std::bad_alloc;
+    std::cerr << "size_: " << size_ << std::endl;
     if(owner) if(-1 == ftruncate(fd_, size_)) throw new std::bad_alloc;
     data_ = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd_, 0);
     if(MAP_FAILED == data_) throw new std::bad_alloc;
   }
 
   SharedMemory::~SharedMemory()
+  {
+    release();
+  }
+
+  void SharedMemory::release()
   {
     close(fd_);
     if(owner_ && (-1 == shm_unlink(name_.c_str()))) perror("could not unlink shared memory");

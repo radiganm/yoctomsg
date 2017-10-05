@@ -36,6 +36,7 @@ namespace rad::yocto {
       virtual size_t read(T *buf, size_t size);
       virtual size_t write(const T* const buf, size_t size);
       virtual void summarize(std::ostream &os);
+      virtual void release();
       int underflow() 
       {
         if (this->gptr() == this->egptr()) {
@@ -62,6 +63,11 @@ namespace rad::yocto {
   {
     o.summarize(os);
     return os;
+  }
+
+  template<typename T, std::size_t N>
+  void rad::yocto::Channel<T,N>::release()
+  {
   }
 
 #endif

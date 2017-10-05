@@ -1,10 +1,9 @@
-/* basic_channel.cc
+/* shmem_channel.cc
  * Copyright 2016 Mac Radigan
  * All Rights Reserved
  */
 
-#include "packages/yocto/Channel.h"
-#include "packages/yocto/BasicChannel.h"
+#include "packages/yocto/ShmemChannel.h"
 
 #include <gflags/gflags.h>
 
@@ -20,7 +19,7 @@
   static std::atomic<bool> is_running(true);
 
   static constexpr size_t N = 5;
-  static rad::yocto::Channel<rad::yocto::slot_t,N> &channel = *new rad::yocto::BasicChannel<rad::yocto::slot_t,N>();
+  static rad::yocto::Channel<rad::yocto::slot_t,N> &channel = *new rad::yocto::ShmemChannel<rad::yocto::slot_t,N>("TEST__shmem_channel", true);
 
   static void interrupt(int signo)
   {
@@ -42,7 +41,12 @@
   {
     int status = EXIT_SUCCESS;
 
-    std::string usage("Test driver for BasicChannel.  Sample usage:\n");
+    if(SIG_ERR == signal(SIGINT, interrupt)) {
+      perror("unable to set signal");
+      return status;
+    }
+
+    std::string usage("Test driver for ShmemChannel.  Sample usage:\n");
     usage += argv[0];
     usage += " ";
     gflags::SetUsageMessage(usage);

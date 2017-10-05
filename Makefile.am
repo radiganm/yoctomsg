@@ -18,6 +18,7 @@ bin_PROGRAMS             = yoctocat                         \
                            read_channel                     \
                            write_channel                    \
                            basic_channel                    \
+                           shmem_channel                    \
                            echo_test
 
 yoctocat_SOURCES         = src/tests/yoctocat.cc
@@ -31,6 +32,9 @@ write_channel_LDADD      = $(yocto_ldadd)
 
 basic_channel_SOURCES    = src/tests/basic_channel.cc
 basic_channel_LDADD      = $(yocto_ldadd)
+
+shmem_channel_SOURCES    = src/tests/shmem_channel.cc
+shmem_channel_LDADD      = $(yocto_ldadd)
 
 echo_test_SOURCES        = src/tests/echo_test.cc
 echo_test_LDADD          = $(yocto_ldadd)

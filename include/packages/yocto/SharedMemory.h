@@ -26,6 +26,7 @@ namespace rad::yocto {
       SharedMemory(const std::string &name, std::size_t size, bool owner=true);
       virtual ~SharedMemory();
       inline void *get_data() { return data_; };
+      void release();
     protected:
     private:
       int fd_;
