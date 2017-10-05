@@ -33,14 +33,14 @@ namespace rad::yocto {
     public:
       Channel() {};
       virtual ~Channel() { buffer_ = reinterpret_cast<char *>(&slot_); };
-      virtual size_t read(T *buf, size_t size);
-      virtual size_t write(const T* const buf, size_t size);
+      virtual std::size_t read(T *buf, std::size_t size);
+      virtual std::size_t write(const T* const buf, std::size_t size);
       virtual void summarize(std::ostream &os);
       virtual void release();
       int underflow() 
       {
         if (this->gptr() == this->egptr()) {
-          size_t size = read(&slot_, 1);
+          std::size_t size = read(&slot_, 1);
           this->setg(this->buffer_, this->buffer_, this->buffer_ + size);
         }
         return this->gptr() == this->egptr()

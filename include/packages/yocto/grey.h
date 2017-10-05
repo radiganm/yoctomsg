@@ -12,6 +12,12 @@
 extern "C" {
 #endif
 
+  #define GREY__VERSION           ("BLUE")
+  #define GREY__REP_BIG_ENDIAN    ("IEEE")
+  #define GREY__REP_LITTLE_ENDIAN ("EEEI")
+  #define GREY__FALSE             (0)
+  #define GREY__TRUE              (1)
+
   typedef struct __attribute__ ((__packed__)) grey_header_s
   {
     char    version[4];
@@ -45,6 +51,14 @@ extern "C" {
     double  pad[236];
   } grey_adjunct_1000_t;
 
+  typedef struct __attribute__ ((__packed__)) grey_adjunct_2000_s
+  {
+    double  xstart;
+    double  xdelta;
+    int32_t xunits;
+    double  pad[236];
+  } grey_adjunct_2000_t;
+
   typedef struct __attribute__ ((__packed__)) grey_file_1000_s
   {
     grey_header_t       header;
@@ -52,6 +66,20 @@ extern "C" {
     size_t              N;
     void                *data;
   } grey_file_1000_t;
+
+  typedef struct __attribute__ ((__packed__)) grey_file_2000_s
+  {
+    grey_header_t       header;
+    grey_adjunct_2000_t adjunct;
+    size_t              N;
+    void                *data;
+  } grey_file_2000_t;
+
+  typedef union grey_file_s
+  {
+    grey_file_1000_t T1000;
+    grey_file_2000_t T2000;
+  } grey_file_t;
 
 #ifndef __cplusplus
 }
