@@ -16,7 +16,7 @@
     if(owner_)
     {
       memset(header_, 0, sizeof(grey_file_t));
-      grey_header_t &hdr = header_->T1000.header;
+      grey_header_t &hdr = header_->header;
       strncpy(hdr.version,  GREY__VERSION,           4);
       strncpy(hdr.head_rep, GREY__REP_LITTLE_ENDIAN, 4);
       strncpy(hdr.data_rep, GREY__REP_LITTLE_ENDIAN, 4);
