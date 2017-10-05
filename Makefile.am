@@ -55,6 +55,8 @@ libyocto_la_SOURCES      = src/packages/yocto/Channel.cc                       \
                            src/packages/yocto/YoChannel.cc                     \
                            src/packages/yocto/Stream.cc                        \
                            src/packages/yocto/Pipe.cc                          \
+                           src/packages/yocto/File.cc                          \
+                           src/packages/yocto/AuxFile.cc                       \
                            src/packages/yocto/SharedMemory.cc                   
 
 libyocto_la_LIBADD       = -lz                                                 \
@@ -71,6 +73,8 @@ pkginclude_HEADERS       = include/packages/yocto/Channel.h                    \
                            include/packages/yocto/YoChannel.h                  \
                            include/packages/yocto/Stream.h                     \
                            include/packages/yocto/Pipe.h                       \
+                           include/packages/yocto/File.h                       \
+                           include/packages/yocto/AuxFile.h                    \
                            include/packages/yocto/SharedMemory.h                
 
 ## *EOF*
