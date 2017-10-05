@@ -5,6 +5,7 @@
 
 #include <string>
 #include <exception>
+#include <iostream>
 
 #ifndef yo_SharedMemory_h
 #define yo_SharedMemory_h
@@ -32,7 +33,7 @@ namespace rad::yocto {
       bool owner_;
       void *data_;
       std::string name_;
-    //friend std::ostream& operator<<(std::ostream &os, const rad::yocto::SharedMemory& o);
+      //friend std::ostream& operator<<(std::ostream &os, const SharedMemory& o);
   };
 
 } // namespace
