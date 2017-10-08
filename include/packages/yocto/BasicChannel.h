@@ -43,6 +43,7 @@ namespace rad::yocto {
       inline std::size_t read(T *buf, std::size_t size);
       inline std::size_t write(const T* const buf, std::size_t size);
       void summarize(std::ostream &os);
+      void notify();
     private:
       std::atomic_uint64_t n_in_;  // write in
       std::atomic_uint64_t n_out_; // read out
@@ -67,6 +68,13 @@ namespace rad::yocto {
   }
 
   template<typename T, std::size_t N>
+  void rad::yocto::BasicChannel<T,N>::notify()
+  {
+    cv_out_.notify_one();
+    cv_in_.notify_one();
+  }
+
+  template<typename T, std::size_t N>
   void rad::yocto::BasicChannel<T,N>::summarize(std::ostream &os)
   {
     std::unique_lock<std::mutex> lck_in(lck_in_);
@@ -83,19 +91,22 @@ namespace rad::yocto {
   template<typename T, std::size_t N>
   size_t rad::yocto::BasicChannel<T,N>::read(T *data, std::size_t data_size)
   {
-    std::unique_lock<std::mutex> lck(lck_out_);
-    auto test_fn = [&](void) -> bool { return n_in_.load() <= n_out_.load(); };
     std::size_t xfer_size = 0;
+    std::unique_lock<std::mutex> lck(lck_out_);
+    auto test_fn = [&](void) -> bool {
+      const int64_t n_delta = std::max(static_cast<int64_t>(0), static_cast<int64_t>(n_in_.load()-n_out_.load()));
+      return n_delta >= 0;
+    };
     while(data_size > 0)
     {
-      if(test_fn()) cv_out_.wait(lck, [&]{return !test_fn();});
-      const std::size_t n_in  = n_in_.load();
-      const std::size_t n_out = n_out_.load();
-      const std::size_t n_delta = std::min(data_size, n_in-n_out);
-      const std::size_t k = (n_out + n_delta) % buffer_size_;
-      const std::size_t k_size = std::min(buffer_size_-k, data_size);
+      cv_out_.wait(lck, [&]{return test_fn();});
+      const auto n_in    = n_in_.load();
+      const auto n_out   = n_out_.load();
+      const std::size_t n_delta = std::max(static_cast<int64_t>(0), static_cast<int64_t>(n_in-n_out));
+      const auto k = n_out % buffer_size_;
+      auto k_size = std::min(std::min(buffer_size_-k, data_size), n_delta);
       std::memcpy(&data[xfer_size], &buffer_[k], k_size);
-      n_out_ += k_size;
+      n_out_    += k_size;
       data_size -= k_size;
       xfer_size += k_size;
       cv_in_.notify_one();
@@ -106,19 +117,22 @@ namespace rad::yocto {
   template<typename T, std::size_t N>
   size_t rad::yocto::BasicChannel<T,N>::write(const T* const data, std::size_t data_size)
   {
-    std::unique_lock<std::mutex> lck(lck_in_);
-    auto test_fn = [&](void) -> bool { n_in_.load() - n_out_.load() >= buffer_size_; };
     std::size_t xfer_size = 0;
+    std::unique_lock<std::mutex> lck(lck_in_);
+    auto test_fn = [&](void) -> bool {
+      const int64_t n_delta = std::max(static_cast<int64_t>(0), static_cast<int64_t>(n_in_.load()-n_out_.load()));
+      return n_delta < buffer_size_;
+    };
     while(data_size > 0)
     {
-      if(test_fn()) cv_in_.wait(lck, [&]{return !test_fn();});
-      const std::size_t n_in  = n_in_.load();
-      const std::size_t n_out = n_out_.load();
-      const std::size_t n_delta = std::min(data_size, n_in-n_out);
-      const std::size_t k = (n_in + n_delta) % buffer_size_;
-      const std::size_t k_size = std::min(buffer_size_-k, data_size);
+      cv_in_.wait(lck, [&]{return test_fn();});
+      const auto n_in    = n_in_.load();
+      const auto n_out   = n_out_.load();
+      const std::size_t n_delta = std::max(static_cast<int64_t>(0), static_cast<int64_t>(n_in-n_out));
+      const auto k = n_in % buffer_size_;
+      auto k_size = std::min(std::min(buffer_size_-k, data_size), buffer_size_-n_delta);
       std::memcpy(&buffer_[k], &data[xfer_size], k_size);
-      n_in_ += k_size;
+      n_in_     += k_size;
       data_size -= k_size;
       xfer_size += k_size;
       cv_out_.notify_one();
