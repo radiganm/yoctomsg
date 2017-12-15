@@ -1,4 +1,4 @@
-#+TITLE: yoctomsg - a high-performance, lightweight messaging framework built atop pachttps://github.com/torvalds/linux/blob/master/Documentation/networking/packet_mmap.txt)ket mmap (see 
+#+TITLE: yoctomsg - a high-performance, lightweight messaging framework built atop packet mmap (see https://github.com/torvalds/linux/blob/master/Documentation/networking/packet_mmap.txt)
 #+AUTHOR: Mac Radigan
 
  # *EOF* 

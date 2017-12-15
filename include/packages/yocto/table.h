@@ -3,8 +3,7 @@
 
 #include "../common/status.h"
 
-#ifndef yo_table_h
-#define yo_table_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,8 +22,6 @@ extern "C" {
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif
 
 /* *EOF* */

@@ -68,21 +68,22 @@
         auto size = channel.read(&data, 1);
         std::cerr << "received:" << size << " block(s)" << std::endl << std::flush;
         std::this_thread::sleep_for(std::chrono::seconds(1));
+        channel.summarize(std::cout);
       } // receive loop
     });
 
-    std::thread summary_th([&](void) -> void {
-      while(is_running)
-      {
-        //channel.summarize(std::cout);
-        std::cerr << channel;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-      } // summary loop
-    });
+  //std::thread summary_th([&](void) -> void {
+  //  while(is_running)
+  //  {
+  //    channel.summarize(std::cout);
+  //    std::cerr << channel;
+  //    std::this_thread::sleep_for(std::chrono::seconds(1));
+  //  } // summary loop
+  //});
 
     read_th.join();
     write_th.join();
-    summary_th.join();
+  //summary_th.join();
 
     return status;
   }

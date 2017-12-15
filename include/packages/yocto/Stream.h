@@ -6,8 +6,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#ifndef yo_Stream_h
-#define yo_Stream_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +33,5 @@ namespace rad::yocto {
   };
 
 } // namespace
-
-#endif
 
 /* *EOF* */

@@ -5,8 +5,7 @@
 
 #include <inttypes.h>
 
-#ifndef grey_h
-#define grey_h
+#pragma once
 
 #ifndef __cplusplus
 extern "C" {
@@ -95,8 +94,6 @@ extern "C" {
 
 #ifndef __cplusplus
 }
-#endif
-
 #endif
 
 /* EOF */

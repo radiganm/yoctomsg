@@ -18,8 +18,7 @@
 #include <cstring>
 #include <iostream>
 
-#ifndef yo_BasicChannel_h
-#define yo_BasicChannel_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,7 +108,7 @@ namespace rad::yocto {
       n_out_    += k_size;
       data_size -= k_size;
       xfer_size += k_size;
-      cv_in_.notify_one();
+      //cv_in_.notify_one();
     }
     return xfer_size;
   }
@@ -135,11 +134,9 @@ namespace rad::yocto {
       n_in_     += k_size;
       data_size -= k_size;
       xfer_size += k_size;
-      cv_out_.notify_one();
+      //cv_out_.notify_one();
     }
     return xfer_size;
   }
-
-#endif
 
 /* *EOF* */

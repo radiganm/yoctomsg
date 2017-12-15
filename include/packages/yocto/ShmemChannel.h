@@ -18,8 +18,7 @@
 #include <atomic>
 #include <cstring>
 
-#ifndef yo_ShmemChannel_h
-#define yo_ShmemChannel_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -133,7 +132,5 @@ namespace rad::yocto {
     std::unique_lock<std::mutex> lck_out(lck_out_);
     shmem_.release();
   }
-
-#endif
 
 /* *EOF* */

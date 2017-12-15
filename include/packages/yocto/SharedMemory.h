@@ -7,8 +7,7 @@
 #include <exception>
 #include <iostream>
 
-#ifndef yo_SharedMemory_h
-#define yo_SharedMemory_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +43,4 @@ namespace rad::yocto {
 //  return os;
 //}
 
-#endif
-
-/* *EOF* */
+// *EOF*

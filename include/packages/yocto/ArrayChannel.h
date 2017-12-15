@@ -16,8 +16,7 @@
 #include <atomic>
 #include <sstream>
 
-#ifndef yo_ArrayChannel_h
-#define yo_ArrayChannel_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -107,7 +106,5 @@ namespace rad::yocto {
     }
     return data_size;
   }
-
-#endif
 
 /* *EOF* */

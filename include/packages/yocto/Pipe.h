@@ -20,8 +20,7 @@
 #include <cstring>
 #include <iostream>
 
-#ifndef yo_Pipe_h
-#define yo_Pipe_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,7 +61,5 @@ namespace rad::yocto {
   {
     channel_->read(data, size);
   }
-
-#endif
 
 /* *EOF* */

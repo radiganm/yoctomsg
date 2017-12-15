@@ -9,8 +9,7 @@
 
 #define CHUNK_SIZE (1024)
 
-#ifndef yo_Channel_h
-#define yo_Channel_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,7 +68,5 @@ namespace rad::yocto {
   void rad::yocto::Channel<T,N>::release()
   {
   }
-
-#endif
 
 /* *EOF* */

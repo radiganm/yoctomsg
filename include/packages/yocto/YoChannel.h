@@ -16,8 +16,7 @@
 #include <atomic>
 #include <cstring>
 
-#ifndef yo_YoChannel_h
-#define yo_YoChannel_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,7 +100,5 @@ namespace rad::yocto {
     }
     return xfer_size;
   }
-
-#endif
 
 /* *EOF* */

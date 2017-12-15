@@ -9,8 +9,7 @@
 #include <cstring>
 #include <iostream>
 
-#ifndef yo_AuxFile_h
-#define yo_AuxFile_h
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +48,5 @@ namespace rad::yocto {
   {
     stream_->read(data, size);
   }
-
-#endif
 
 /* *EOF* */

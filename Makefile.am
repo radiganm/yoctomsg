@@ -7,7 +7,7 @@ AM_LDFLAGS  = -pthread                                             \
               -L/usr/lib/x86_64-linux-gnu -lgflags                  
 
 AM_CPPFLAGS = -I$(top_srcdir)/include                              \
-              -std=c++11
+              -std=c++1z
 AM_FCFLAGS  = -Jmod
 
 yocto_ldadd              = libyocto.la                             \
